@@ -123,7 +123,33 @@ public class NovaBungeeAnnouncer extends Plugin implements Listener {
 			ByteArrayDataOutput out = ByteStreams.newDataOutput();
 			out.writeUTF(player);
 			out.writeUTF(permMessage);
-			ProxyServer.getInstance().getServerInfo(config.permissionServer).sendData("NBA", out.toByteArray());
+			if(config.permissionServer.equalsIgnoreCase("BungeeCord")){
+				if(!perms.containsKey(player)){
+					perms.put(player, new ArrayList<String>());
+				}
+				if(ProxyServer.getInstance().getPlayer(player).hasPermission(permMessage)){
+					perms.get(player).add("+" + permMessage);
+					if(queue.containsKey(player)){
+						for(int i = 0; i < queue.get(player).size(); i++){
+							PlayerMessage qm = queue.get(player).get(i);
+							if(qm.permission.equals(permMessage)){
+								qm.sendMessage();
+								queue.remove(qm);
+								break;
+							}
+						}
+					}
+					if(queBroadcast.containsKey(player)){
+						queBroadcast.get(player).sendMessage();
+						queBroadcast.clear();
+					}
+				}
+				  //ProxyServer.getInstance().getPlayer(player).has(permission)
+			}
+			else{
+
+				ProxyServer.getInstance().getServerInfo(config.permissionServer).sendData("NBA", out.toByteArray());
+			}
 		}
 	}
 
@@ -153,7 +179,7 @@ public class NovaBungeeAnnouncer extends Plugin implements Listener {
 			String serverName = s.getKey();
 			System.out.println(s.getValue().getClass());
 			System.out.println(s.getValue().getRawMap().toString());
-			System.out.println(s.getValue().get("message"));
+			//System.out.println(s.getValue().get("message"));
 			MessageMap serverConfig = s.getValue();
 			ScheduledTask task = getProxy().getScheduler().schedule(this, new AnnounceMessage(serverConfig, serverName), serverConfig.offset, serverConfig.delay, TimeUnit.SECONDS);
 			System.out.println("New task scheduled with offset " + serverConfig.offset + " and delay " + serverConfig.delay);

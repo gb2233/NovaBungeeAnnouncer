@@ -14,6 +14,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NovaBungeeAnnouncer extends JavaPlugin implements PluginMessageListener, Listener {
 	public static Permission permission = null;
@@ -56,10 +58,11 @@ public class NovaBungeeAnnouncer extends JavaPlugin implements PluginMessageList
 			  out.writeUTF("-"+permissionS);
 		  }
 
-		  // If you don't care about the player
-		  Player player = new ArrayList<Player>(Bukkit.getOnlinePlayers()).get(0);
-		  // Else, specify them
-		  //Player player = Bukkit.getPlayerExact("Example");
+		  ArrayList<Player> playerS = new ArrayList<Player>();
+		  for(Player pp : Bukkit.getOnlinePlayers()){
+			  playerS.add(pp);
+		  }
+		  Player player = playerS.get(0);
 
 		  player.sendPluginMessage(this, "NBA", out.toByteArray());
 	}
